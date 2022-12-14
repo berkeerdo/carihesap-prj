@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView, View } from "react-native";
 import {
   Divider,
@@ -11,14 +11,13 @@ import {
 } from "@ui-kitten/components";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome5";
 
-export const PersonsScreen = ({ navigation }) => {
+export const PersonsScreen = ({ navigation, users }) => {
   const [value, setValue] = React.useState("");
   const [data, setData] = React.useState([]);
 
-  const newData = new Array(8).fill({
-    name: "Mahmut",
-    company: "Biye Teks",
-  });
+  useEffect(() => {
+    setData(users.map((user) => user.name));
+  }, []);
 
   const renderItem = ({ item, index }) => (
     <Card style={[themedStyles.Card, { marginTop: 20 }]}>
@@ -49,7 +48,7 @@ export const PersonsScreen = ({ navigation }) => {
           onChangeText={(e) => setValue(e)}
         />
         <List
-          data={newData}
+          data={data}
           renderItem={renderItem}
           ItemSeparatorComponent={Divider}
           style={{

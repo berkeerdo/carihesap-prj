@@ -8,10 +8,16 @@ import {
   List,
   Input,
   Card,
+  Modal,
+  Button,
 } from "@ui-kitten/components";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome5";
 
-export const CompaniesScreen = ({ navigation }) => {
+export const CompaniesScreen = ({
+  navigation,
+  modalVisible,
+  setModalVisible,
+}) => {
   const [value, setValue] = React.useState("");
   const [data, setData] = React.useState([]);
 
@@ -56,6 +62,31 @@ export const CompaniesScreen = ({ navigation }) => {
           }}
         />
       </Layout>
+      <Modal
+        visible={modalVisible}
+        backdropStyle={themedStyles.backdrop}
+        onBackdropPress={() => setModalVisible(false)}
+        style={{
+          flex: 1,
+          width: "100%",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Card style={{ width: "90%", flex: 1, alignItems: "center" }}>
+          <Text category="label" style={{ marginBottom: 5 }}>
+            Şirket Adı
+          </Text>
+          <Input placeholder="Şirket Adı" style={{ width: "100%" }} />
+          <Button
+            size="small"
+            style={{ marginTop: 10 }}
+            onPress={() => setModalVisible(false)}
+          >
+            Ekle
+          </Button>
+        </Card>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -63,5 +94,8 @@ export const CompaniesScreen = ({ navigation }) => {
 const themedStyles = StyleService.create({
   Card: {
     borderRadius: 15,
+  },
+  backdrop: {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
 });
