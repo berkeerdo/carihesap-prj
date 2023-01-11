@@ -8,16 +8,39 @@ import {
   Card,
   StyleService,
   List,
+  Button,
 } from "@ui-kitten/components";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome5";
+import * as SQLite from "expo-sqlite";
 
 export const PersonsScreen = ({ navigation, users }) => {
+  const db = SQLite.openDatabase("mainDB.db");
   const [value, setValue] = React.useState("");
   const [data, setData] = React.useState([]);
 
+  const listData = () => {
+    setData(users.map((item) => item));
+  };
+
   useEffect(() => {
-    setData(users.map((user) => user.name));
+    listData();
   }, []);
+
+  const deleteUser = (id) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "DELETE FROM names WHERE id = ?",
+        [id],
+        (txObj, resultSet) => {
+          if (resultSet.rowsAffected > 0) {
+            let existingNames = [...users].filter((user) => user.id !== id);
+            setData(existingNames);
+          }
+        },
+        (txObj, error) => console.log(error)
+      );
+    });
+  };
 
   const renderItem = ({ item, index }) => (
     <Card style={[themedStyles.Card, { marginTop: 20 }]}>
@@ -38,6 +61,17 @@ export const PersonsScreen = ({ navigation, users }) => {
     </Card>
   );
 
+  const showUsers = () => {
+    return data.map((item, index) => {
+      return (
+        <View key={item.id}>
+          <Text>{item.name}</Text>
+          <Button onPress={() => deleteUser(item.id)}>Delete</Button>
+        </View>
+      );
+    });
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Divider />
@@ -47,7 +81,7 @@ export const PersonsScreen = ({ navigation, users }) => {
           accessoryLeft={<FontAwesomeIcon name="search" size={20} />}
           onChangeText={(e) => setValue(e)}
         />
-        <List
+        {/* <List
           data={data}
           renderItem={renderItem}
           ItemSeparatorComponent={Divider}
@@ -56,7 +90,8 @@ export const PersonsScreen = ({ navigation, users }) => {
             borderRadius: 15,
             paddingHorizontal: 15,
           }}
-        />
+        /> */}
+        {showUsers()}
       </Layout>
     </SafeAreaView>
   );

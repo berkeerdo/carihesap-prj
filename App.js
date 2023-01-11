@@ -15,14 +15,17 @@ export default App = () => {
   useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql(
-        "CREATE TABLE IF NOT EXISTS names (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)"
+        "CREATE TABLE IF NOT EXISTS names (id  INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT , phone1 NUMERIC, phone2 NUMERIC, company TEXT, note TEXT)"
       );
     });
     db.transaction((tx) => {
       tx.executeSql(
         "SELECT * FROM names",
         null,
-        (txObj, resultSet) => setUsers(resultSet.rows._array),
+        (txObj, resultSet) => {
+          setUsers(resultSet.rows._array);
+          console.log(resultSet.rows._array);
+        },
         (txObj, error) => console.log(error)
       );
     });

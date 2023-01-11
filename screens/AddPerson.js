@@ -12,7 +12,7 @@ import {
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome5";
 import * as SQLite from "expo-sqlite";
 
-export const AddPersonScreen = ({ navigation }) => {
+export const AddPersonScreen = ({ navigation, users, setUsers, setActive }) => {
   const db = SQLite.openDatabase("mainDB.db");
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
@@ -28,8 +28,22 @@ export const AddPersonScreen = ({ navigation }) => {
         [name],
         (txObj, resultSet) => {
           let existingUsers = [...users];
-          existingUsers.push({ id: resultSet.insertId, name: name });
+          existingUsers.push({
+            id: resultSet.insertId,
+            name: name,
+            phone1: phone1,
+            phone2: phone2,
+            company: company,
+            adress: adress,
+            note: note,
+          });
           setUsers(existingUsers);
+          setName("");
+          setPhone1("");
+          setPhone2("");
+          setCompany("");
+          setAdress("");
+          setNote("");
         },
         (txObj, error) => console.log(error)
       );
@@ -53,6 +67,7 @@ export const AddPersonScreen = ({ navigation }) => {
                   Ad-Soyad
                 </Text>
                 <Input
+                  value={name}
                   placeholder="Ad-Soyad"
                   onChangeText={(e) => setName(e)}
                   size="small"
@@ -72,6 +87,7 @@ export const AddPersonScreen = ({ navigation }) => {
                   Telefon-1
                 </Text>
                 <Input
+                  value={phone1}
                   placeholder="Telefon"
                   onChangeText={(e) => setPhone1(e)}
                   size="small"
@@ -91,6 +107,7 @@ export const AddPersonScreen = ({ navigation }) => {
                   Telefon-2
                 </Text>
                 <Input
+                  value={phone2}
                   placeholder="Telefon"
                   onChangeText={(e) => setPhone2(e)}
                   size="small"
@@ -110,8 +127,9 @@ export const AddPersonScreen = ({ navigation }) => {
                   Firma
                 </Text>
                 <Input
+                  value={company}
                   placeholder="Firma"
-                  onChangeText={(e) => setName(e)}
+                  onChangeText={(e) => setCompany(e)}
                   size="small"
                 />
               </View>
@@ -129,6 +147,7 @@ export const AddPersonScreen = ({ navigation }) => {
                   Adres
                 </Text>
                 <Input
+                  value={adress}
                   placeholder="Adres"
                   onChangeText={(e) => setAdress(e)}
                   size="small"
@@ -148,6 +167,7 @@ export const AddPersonScreen = ({ navigation }) => {
                   Not
                 </Text>
                 <Input
+                  value={note}
                   placeholder="Not"
                   onChangeText={(e) => setNote(e)}
                   size="small"
@@ -156,7 +176,16 @@ export const AddPersonScreen = ({ navigation }) => {
             </View>
           </Card>
         </ScrollView>
-        <Button appearance="outline">Ekle</Button>
+        <Button
+          onPress={() => {
+            addUser();
+            setActive(true);
+            navigation.goBack();
+          }}
+          appearance="outline"
+        >
+          Ekle
+        </Button>
       </Layout>
     </SafeAreaView>
   );

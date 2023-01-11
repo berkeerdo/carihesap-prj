@@ -18,7 +18,6 @@ import {
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialComIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { TouchableHighlight } from "react-native";
 
 const { Navigator, Screen } = createBottomTabNavigator();
 
@@ -54,7 +53,7 @@ const BottomTabBar = ({ navigation, state, isActive }) => {
   );
 };
 
-const TabNavigator = ({ users }) => {
+const TabNavigator = ({ users, setUsers }) => {
   const [isActive, setActive] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -180,7 +179,14 @@ const TabNavigator = ({ users }) => {
           ),
         })}
       >
-        {(props) => <AddPersonScreen {...props} />}
+        {(props) => (
+          <AddPersonScreen
+            users={users}
+            setUsers={setUsers}
+            setActive={setActive}
+            {...props}
+          />
+        )}
       </Screen>
     </Navigator>
   );
