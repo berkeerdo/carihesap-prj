@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView, View } from "react-native";
 import {
   Divider,
@@ -12,9 +12,60 @@ import {
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialComIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  setDoc,
+  where,
+  query,
+} from "firebase/firestore/lite";
+import { db } from "../db/config";
 
 export const HomeScreen = ({ navigation }) => {
   const theme = useTheme();
+  const [activityName, setActivityName] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [data, setData] = useState([]);
+  const [alacakAmount, setAlacakAmount] = useState();
+  const [borcAmount, setBorcAmount] = useState();
+
+  useEffect(() => {
+    GetData();
+    data.map((item) => {
+      if (item.activity_name === "alacak") {
+        setAlacakAmount(item.amount);
+      } else if (item.activity_name === "borc") {
+        setBorcAmount(item.amount);
+      }
+    });
+  }, []);
+
+  const GetData = async () => {
+    const colRef = collection(db, "activities");
+    await getDocs(colRef)
+      .then((snapshot) => {
+        let exchangeList = [];
+        snapshot.docs.forEach((doc) => {
+          exchangeList.push({ ...doc.data(), id: doc.id });
+        });
+        setData(exchangeList);
+        console.log(exchangeList);
+      })
+      .catch((err) => {
+        console.log(err.messsage);
+      });
+  };
+
+  const AddData = async () => {
+    await addDoc(collection(db, "activities"), {
+      activity_name: activityName,
+      amount: amount,
+    });
+    setActivityName("");
+    setAmount(0);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -41,7 +92,7 @@ export const HomeScreen = ({ navigation }) => {
               <Text category="h6">Alacak</Text>
               <View style={{ display: "flex", alignItems: "flex-end" }}>
                 <Text category="s2">Eklemek için dokun</Text>
-                <Text category="h5">₺ 0,00</Text>
+                <Text category="h5">₺ {alacakAmount}</Text>
               </View>
             </View>
           </Card>
@@ -62,7 +113,7 @@ export const HomeScreen = ({ navigation }) => {
               <Text category="h6">Borç</Text>
               <View style={{ display: "flex", alignItems: "flex-end" }}>
                 <Text category="s2">Eklemek için dokun</Text>
-                <Text category="h5">₺ 0,00</Text>
+                <Text category="h5">₺ {borcAmount}</Text>
               </View>
             </View>
           </Card>

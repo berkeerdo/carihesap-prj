@@ -8,12 +8,13 @@ import {
   Button,
   Input,
   Card,
+  Spinner,
 } from "@ui-kitten/components";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome5";
-import * as SQLite from "expo-sqlite";
+import { collection, addDoc } from "firebase/firestore/lite";
+import { db } from "../db/config";
 
-export const AddPersonScreen = ({ navigation, users, setUsers, setActive }) => {
-  const db = SQLite.openDatabase("mainDB.db");
+export const AddPersonScreen = ({ navigation, setActive }) => {
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [phone1, setPhone1] = useState(Number);
@@ -21,33 +22,21 @@ export const AddPersonScreen = ({ navigation, users, setUsers, setActive }) => {
   const [adress, setAdress] = useState("");
   const [note, setNote] = useState("");
 
-  const addUser = () => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "INSERT INTO names (name) values (?)",
-        [name],
-        (txObj, resultSet) => {
-          let existingUsers = [...users];
-          existingUsers.push({
-            id: resultSet.insertId,
-            name: name,
-            phone1: phone1,
-            phone2: phone2,
-            company: company,
-            adress: adress,
-            note: note,
-          });
-          setUsers(existingUsers);
-          setName("");
-          setPhone1("");
-          setPhone2("");
-          setCompany("");
-          setAdress("");
-          setNote("");
-        },
-        (txObj, error) => console.log(error)
-      );
+  const AddData = async () => {
+    await addDoc(collection(db, "persons"), {
+      name: name,
+      phone1: phone1,
+      phone2: phone2,
+      note: note,
+      adress: adress,
+      company: company,
     });
+    setName("");
+    setCompany("");
+    setAdress("");
+    setNote("");
+    setPhone1(null);
+    setPhone2(null);
   };
 
   return (
@@ -176,11 +165,12 @@ export const AddPersonScreen = ({ navigation, users, setUsers, setActive }) => {
             </View>
           </Card>
         </ScrollView>
+
         <Button
           onPress={() => {
-            addUser();
-            setActive(true);
+            AddData();
             navigation.goBack();
+            setActive(false);
           }}
           appearance="outline"
         >

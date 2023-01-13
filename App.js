@@ -3,35 +3,10 @@ import * as eva from "@eva-design/eva";
 import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import { BottomTabNavigator } from "./navigation/BottomTabNavigator";
-import * as SQLite from "expo-sqlite";
 import { View, Text } from "react-native";
 
 export default App = () => {
-  const db = SQLite.openDatabase("mainDB.db");
-  const [isLoading, setIsLoading] = useState(true);
-  const [users, setUsers] = useState([]);
-  const [currentName, setCurrentName] = useState(undefined);
-
-  useEffect(() => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "CREATE TABLE IF NOT EXISTS names (id  INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT , phone1 NUMERIC, phone2 NUMERIC, company TEXT, note TEXT)"
-      );
-    });
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM names",
-        null,
-        (txObj, resultSet) => {
-          setUsers(resultSet.rows._array);
-          console.log(resultSet.rows._array);
-        },
-        (txObj, error) => console.log(error)
-      );
-    });
-
-    setIsLoading(false);
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
 
   const LoadingComponent = () => {
     return (
@@ -52,11 +27,7 @@ export default App = () => {
     <>
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={eva.light}>
-        {isLoading ? (
-          <LoadingComponent />
-        ) : (
-          <BottomTabNavigator users={users} setUsers={setUsers} />
-        )}
+        {isLoading ? <LoadingComponent /> : <BottomTabNavigator />}
       </ApplicationProvider>
     </>
   );
