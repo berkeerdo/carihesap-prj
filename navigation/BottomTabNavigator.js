@@ -43,9 +43,9 @@ const BottomTabBar = ({ navigation, state, isActive }) => {
             <BottomNavigationTab
               icon={<FontAwesomeIcon name="exchange-alt" size={22} />}
             />
-            <BottomNavigationTab
+            {/* <BottomNavigationTab
               icon={<FontAwesomeIcon name="wallet" size={22} />}
-            />
+            /> */}
           </BottomNavigation>
         </>
       )}
@@ -140,9 +140,9 @@ const TabNavigator = ({ users, setUsers }) => {
       <Screen name="Exchange" options={{ headerTitle: "Hareketler" }}>
         {(props) => <ExchangeScreen {...props} />}
       </Screen>
-      <Screen name="Wallet" options={{ headerTitle: "Cüzdan" }}>
+      {/* <Screen name="Wallet" options={{ headerTitle: "Cüzdan" }}>
         {(props) => <WalletScreen {...props} />}
-      </Screen>
+      </Screen> */}
       <Screen
         name="Settings"
         options={({ navigation }) => ({

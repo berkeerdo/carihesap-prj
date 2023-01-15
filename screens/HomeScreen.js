@@ -8,19 +8,13 @@ import {
   useTheme,
   StyleService,
   Button,
+  Input,
+  Modal,
 } from "@ui-kitten/components";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialComIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  setDoc,
-  where,
-  query,
-} from "firebase/firestore/lite";
+import { collection, addDoc, getDocs } from "firebase/firestore/lite";
 import { db } from "../db/config";
 
 export const HomeScreen = ({ navigation }) => {
@@ -28,19 +22,23 @@ export const HomeScreen = ({ navigation }) => {
   const [activityName, setActivityName] = useState("");
   const [amount, setAmount] = useState(0);
   const [data, setData] = useState([]);
-  const [alacakAmount, setAlacakAmount] = useState();
-  const [borcAmount, setBorcAmount] = useState();
+  const [alacakAmount, setAlacakAmount] = useState(0);
+  const [borcAmount, setBorcAmount] = useState(0);
+  const [byWho, setByWho] = useState("");
+  const [borcModal, setBorcModal] = useState(false);
+  const [alacakModal, setAlacakModal] = useState(false);
 
   useEffect(() => {
     GetData();
     data.map((item) => {
       if (item.activity_name === "alacak") {
-        setAlacakAmount(item.amount);
-      } else if (item.activity_name === "borc") {
-        setBorcAmount(item.amount);
-      }
+        setAlacakAmount(parseInt(alacakAmount) + parseInt(item.amount));
+      } else if (item.activity_name === "borc")
+        [setBorcAmount(parseInt(borcAmount) + parseInt(item.amount))];
     });
   }, []);
+
+  console.log(alacakAmount);
 
   const GetData = async () => {
     const colRef = collection(db, "activities");
@@ -51,7 +49,6 @@ export const HomeScreen = ({ navigation }) => {
           exchangeList.push({ ...doc.data(), id: doc.id });
         });
         setData(exchangeList);
-        console.log(exchangeList);
       })
       .catch((err) => {
         console.log(err.messsage);
@@ -61,10 +58,17 @@ export const HomeScreen = ({ navigation }) => {
   const AddData = async () => {
     await addDoc(collection(db, "activities"), {
       activity_name: activityName,
+      by_who: byWho,
       amount: amount,
     });
+    if (activityName === "alacak") {
+      setAlacakAmount(alacakAmount + amount);
+    } else if (activityName === "borc") {
+      setBorcAmount(borcAmount + amount);
+    }
     setActivityName("");
     setAmount(0);
+    setByWho("");
   };
 
   return (
@@ -80,7 +84,13 @@ export const HomeScreen = ({ navigation }) => {
             },
           ]}
         >
-          <Card style={[themedStyles.Card, { backgroundColor: "#99d98c" }]}>
+          <Card
+            style={[themedStyles.Card, { backgroundColor: "#99d98c" }]}
+            onPress={() => {
+              setAlacakModal(true);
+              setActivityName("alacak");
+            }}
+          >
             <View
               style={{
                 display: "flex",
@@ -101,6 +111,10 @@ export const HomeScreen = ({ navigation }) => {
               themedStyles.Card,
               { backgroundColor: "#f87171", marginTop: 20 },
             ]}
+            onPress={() => {
+              setBorcModal(true);
+              setActivityName("borc");
+            }}
           >
             <View
               style={{
@@ -132,9 +146,12 @@ export const HomeScreen = ({ navigation }) => {
               }}
             >
               <Text category="h6">Bakiye</Text>
-              <Text>₺ 0,00</Text>
+              <Text>₺ {alacakAmount - borcAmount}</Text>
             </View>
           </Card>
+          <Button style={{ marginTop: 20 }} onPress={() => GetData()}>
+            Yenile
+          </Button>
         </View>
 
         <View style={{ padding: 20 }}>
@@ -186,17 +203,54 @@ export const HomeScreen = ({ navigation }) => {
             >
               Hareket
             </Button>
-            <Button
-              style={themedStyles.TabButton}
-              onPress={() => navigation.navigate("Wallet")}
-              accessoryLeft={
-                <FontAwesomeIcon name="wallet" size={18} color="white" />
-              }
-            >
-              Cüzdan
-            </Button>
           </View>
         </View>
+        <Modal
+          visible={alacakModal}
+          backdropStyle={themedStyles.backdrop}
+          onBackdropPress={() => setAlacakModal(false)}
+          style={themedStyles.Modal}
+        >
+          <Card disabled={true}>
+            <Text category="h6">Alacak</Text>
+            <Input
+              style={themedStyles.Input}
+              placeholder="Ad"
+              value={byWho}
+              onChangeText={(e) => setByWho(e)}
+            />
+            <Input
+              style={themedStyles.Input}
+              placeholder="Amount"
+              value={amount}
+              onChangeText={(e) => setAmount(e)}
+            />
+            <Button onPress={() => AddData()}>Ekle</Button>
+          </Card>
+        </Modal>
+        <Modal
+          visible={borcModal}
+          backdropStyle={themedStyles.backdrop}
+          onBackdropPress={() => setBorcModal(false)}
+          style={themedStyles.Modal}
+        >
+          <Card disabled={true}>
+            <Text category="h6">Alacak</Text>
+            <Input
+              style={themedStyles.Input}
+              placeholder="Ad"
+              value={byWho}
+              onChangeText={(e) => setByWho(e)}
+            />
+            <Input
+              style={themedStyles.Input}
+              placeholder="Amount"
+              value={amount}
+              onChangeText={(e) => setAmount(e)}
+            />
+            <Button onPress={() => AddData()}>Ekle</Button>
+          </Card>
+        </Modal>
       </Layout>
     </SafeAreaView>
   );
@@ -217,5 +271,14 @@ const themedStyles = StyleService.create({
   },
   TabButton: {
     width: 125,
+  },
+  backdrop: {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  Modal: {
+    width: "80%",
+  },
+  Input: {
+    marginVertical: 15,
   },
 });

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { SafeAreaView, View } from "react-native";
+import { SafeAreaView, ScrollView, View } from "react-native";
 import {
   Divider,
   Layout,
@@ -11,15 +11,7 @@ import {
   Button,
 } from "@ui-kitten/components";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome5";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  setDoc,
-  where,
-  query,
-} from "firebase/firestore/lite";
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore/lite";
 import { db } from "../db/config";
 
 export const ExchangeScreen = ({ navigation }) => {
@@ -42,7 +34,6 @@ export const ExchangeScreen = ({ navigation }) => {
           exchangeList.push({ ...doc.data(), id: doc.id });
         });
         setData(exchangeList);
-        console.log(exchangeList);
       })
       .catch((err) => {
         console.log(err.messsage);
@@ -68,6 +59,7 @@ export const ExchangeScreen = ({ navigation }) => {
           />
           <Button onPress={() => GetData()}>Yenile</Button>
         </View>
+        <ScrollView>
         {data.map((item, index) => (
           <Card
             key={item.id}
@@ -96,6 +88,21 @@ export const ExchangeScreen = ({ navigation }) => {
                 <Text category="h6">{item.amount}</Text>
               </View>
             </View>
+            <View style={{marginVertical: 5}}>
+              <Divider />
+            </View>
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginVertical: 10,
+              }}
+            >
+              <Text category="h6">Tarafından: </Text>
+              <Text category="s1">{item.by_who}</Text>
+            </View>
             <View
               style={{
                 display: "flex",
@@ -111,6 +118,7 @@ export const ExchangeScreen = ({ navigation }) => {
             </View>
           </Card>
         ))}
+        </ScrollView>
       </Layout>
     </SafeAreaView>
   );
