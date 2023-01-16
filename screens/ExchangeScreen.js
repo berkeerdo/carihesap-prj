@@ -50,74 +50,66 @@ export const ExchangeScreen = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1 }}>
       <Divider />
       <Layout style={{ flex: 1, paddingVertical: 20, paddingHorizontal: 15 }}>
-        <View>
-          <Input
-            placeholder="Arama"
-            style={{ paddingBottom: 8 }}
-            accessoryLeft={<FontAwesomeIcon name="search" size={20} />}
-            onChangeText={(e) => setValue(e)}
-          />
-          <Button onPress={() => GetData()}>Yenile</Button>
-        </View>
+        <Button onPress={() => GetData()}>Yenile</Button>
         <ScrollView>
-        {data.map((item, index) => (
-          <Card
-            key={item.id}
-            style={[
-              themedStyles.Card,
-              {
-                marginTop: 20,
-                backgroundColor:
-                  item.activity_name === "alacak" ? "#99d98c" : "#f87171",
-              },
-            ]}
-          >
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
+          {data.map((item, index) => (
+            <Card
+              key={item.id}
+              style={[
+                themedStyles.Card,
+                {
+                  marginTop: 20,
+                  backgroundColor:
+                    item.activity_name === "alacak" ? "#99d98c" : "#f87171",
+                },
+              ]}
             >
-              <Text category="h6" style={{ textTransform: "capitalize" }}>
-                {item.activity_name}
-              </Text>
-              <View style={{ display: "flex", alignItems: "flex-end" }}>
-                <Text category="s2">Amount:</Text>
-                <Text category="h6">{item.amount}</Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Text category="h6" style={{ textTransform: "capitalize" }}>
+                  {item.activity_name}
+                </Text>
+                <View style={{ display: "flex", alignItems: "flex-end" }}>
+                  <Text category="s2">Amount:</Text>
+                  <Text category="h6">{item.amount}</Text>
+                </View>
               </View>
-            </View>
-            <View style={{marginVertical: 5}}>
-              <Divider />
-            </View>
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginVertical: 10,
-              }}
-            >
-              <Text category="h6">Tarafından: </Text>
-              <Text category="s1">{item.by_who}</Text>
-            </View>
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row-reverse",
-                justifyContent: "space-between",
-                alignItems: "center",
-                paddingTop: 6,
-              }}
-            >
-              <Button onPress={() => DeleteData(item.id)} size="small">
-                <Text>Sil</Text>
-              </Button>
-            </View>
-          </Card>
-        ))}
+              <View style={{ marginVertical: 5 }}>
+                <Divider />
+              </View>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginVertical: 10,
+                }}
+              >
+                <Text category="h6">Tarafından: </Text>
+                <Text category="s1">{item.by_who}</Text>
+              </View>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row-reverse",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingTop: 6,
+                }}
+              >
+                <Button onPress={() => DeleteData(item.id)} size="small">
+                  <Text>Sil</Text>
+                </Button>
+              </View>
+            </Card>
+          ))}
         </ScrollView>
       </Layout>
     </SafeAreaView>

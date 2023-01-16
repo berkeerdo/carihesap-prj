@@ -12,13 +12,11 @@ import {
   Modal,
 } from "@ui-kitten/components";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome5";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialComIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { collection, addDoc, getDocs } from "firebase/firestore/lite";
 import { db } from "../db/config";
 
-export const HomeScreen = ({ navigation }) => {
-  const theme = useTheme();
+export const HomeScreen = ({ navigation, stateValue }) => {
   const [activityName, setActivityName] = useState("");
   const [amount, setAmount] = useState(0);
   const [data, setData] = useState([]);
@@ -31,28 +29,34 @@ export const HomeScreen = ({ navigation }) => {
   const [totalBorcAmount, setTotalBorcAmount] = useState([]);
 
   useEffect(() => {
-    GetData();
-    data.map((item) => {
-      if (item.activity_name === "alacak") {
-        setTotalAlacakAmount([]);
-        totalAlacakAmount.push(parseInt(item.amount));
-        let sum = 0;
-        for (let i = 0; i < totalAlacakAmount.length; i++) {
-          sum += totalAlacakAmount[i];
-        }
-        setAlacakAmount(sum);
-      }
-      if (item.activity_name === "borc") {
-        setTotalBorcAmount([]);
-        totalBorcAmount.push(parseInt(item.amount));
-        let borcSum = 0;
-        for (let a = 0; a < totalBorcAmount.length; a++) {
-          borcSum += totalBorcAmount[a];
-        }
-        setBorcAmount(borcSum);
-      }
-    });
+    GetDataOnIndex();
   }, []);
+
+  const GetDataOnIndex = () => {
+    if (stateValue === 2) {
+      GetData();
+      data.map((item) => {
+        if (item.activity_name === "alacak") {
+          setTotalAlacakAmount([]);
+          totalAlacakAmount.push(parseInt(item.amount));
+          let sum = 0;
+          for (let i = 0; i < totalAlacakAmount.length; i++) {
+            sum += totalAlacakAmount[i];
+          }
+          setAlacakAmount(sum);
+        }
+        if (item.activity_name === "borc") {
+          setTotalBorcAmount([]);
+          totalBorcAmount.push(parseInt(item.amount));
+          let borcSum = 0;
+          for (let a = 0; a < totalBorcAmount.length; a++) {
+            borcSum += totalBorcAmount[a];
+          }
+          setBorcAmount(borcSum);
+        }
+      });
+    }
+  };
 
   const GetData = async () => {
     const colRef = collection(db, "activities");
@@ -166,10 +170,10 @@ export const HomeScreen = ({ navigation }) => {
           <Button
             style={{ marginTop: 20 }}
             onPress={() => {
-              GetData();
+              GetDataOnIndex();
             }}
           >
-            Yenile
+            Veriyi Tazele
           </Button>
         </View>
 

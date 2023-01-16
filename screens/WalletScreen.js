@@ -40,11 +40,6 @@ export const WalletScreen = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1 }}>
       <Divider />
       <Layout style={{ flex: 1, paddingVertical: 20, paddingHorizontal: 15 }}>
-        <Input
-          placeholder="Arama"
-          accessoryLeft={<FontAwesomeIcon name="search" size={20} />}
-          onChangeText={(e) => setValue(e)}
-        />
         <View
           style={{
             display: "flex",

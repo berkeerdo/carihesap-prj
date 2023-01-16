@@ -114,16 +114,7 @@ export const PersonsScreen = ({ navigation, users }) => {
     <SafeAreaView style={{ flex: 1 }}>
       <Divider />
       <Layout style={{ flex: 1, paddingVertical: 20, paddingHorizontal: 15 }}>
-        <View>
-          <Input
-            placeholder="Arama"
-            style={{ paddingBottom: 8 }}
-            accessoryLeft={<FontAwesomeIcon name="search" size={20} />}
-            onChangeText={(e) => setValue(e)}
-          />
           <Button onPress={() => GetData()}>Yenile</Button>
-        </View>
-
         <ScrollView
           style={{
             marginTop: 20,

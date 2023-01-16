@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { HomeScreen } from "../screens/HomeScreen";
 import { PersonsScreen } from "../screens/PersonsScreen";
@@ -21,7 +21,17 @@ import MaterialComIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const { Navigator, Screen } = createBottomTabNavigator();
 
-const BottomTabBar = ({ navigation, state, isActive }) => {
+const BottomTabBar = ({
+  navigation,
+  state,
+  isActive,
+  stateValue,
+  setStateValue,
+}) => {
+  useEffect(() => {
+    setStateValue(state.index);
+  }, []);
+
   return (
     <>
       {isActive && (
@@ -29,7 +39,10 @@ const BottomTabBar = ({ navigation, state, isActive }) => {
           <Divider style={themedStyles.divider} />
           <BottomNavigation
             selectedIndex={state.index}
-            onSelect={(index) => navigation.navigate(state.routeNames[index])}
+            onSelect={(index) => {
+              navigation.navigate(state.routeNames[index]);
+              setStateValue(index);
+            }}
           >
             <BottomNavigationTab
               icon={<FontAwesomeIcon name="users" size={18} />}
@@ -56,11 +69,19 @@ const BottomTabBar = ({ navigation, state, isActive }) => {
 const TabNavigator = ({ users, setUsers }) => {
   const [isActive, setActive] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+  const [stateValue, setStateValue] = useState(0);
 
   return (
     <Navigator
       initialRouteName={"Cari"}
-      tabBar={(props) => <BottomTabBar isActive={isActive} {...props} />}
+      tabBar={(props) => (
+        <BottomTabBar
+          stateValue={stateValue}
+          setStateValue={setStateValue}
+          isActive={isActive}
+          {...props}
+        />
+      )}
       screenOptions={({ navigation }) => ({
         headerTitleAlign: "center",
         headerStyle: {
@@ -135,7 +156,7 @@ const TabNavigator = ({ users, setUsers }) => {
         )}
       </Screen>
       <Screen name="Cari" options={{ headerTitle: "Cari Hesap Takip" }}>
-        {(props) => <HomeScreen {...props} />}
+        {(props) => <HomeScreen {...props} stateValue={stateValue} />}
       </Screen>
       <Screen name="Exchange" options={{ headerTitle: "Hareketler" }}>
         {(props) => <ExchangeScreen {...props} />}
