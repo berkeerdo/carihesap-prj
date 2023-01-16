@@ -27,18 +27,32 @@ export const HomeScreen = ({ navigation }) => {
   const [byWho, setByWho] = useState("");
   const [borcModal, setBorcModal] = useState(false);
   const [alacakModal, setAlacakModal] = useState(false);
+  const [totalAlacakAmount, setTotalAlacakAmount] = useState([]);
+  const [totalBorcAmount, setTotalBorcAmount] = useState([]);
 
   useEffect(() => {
     GetData();
     data.map((item) => {
       if (item.activity_name === "alacak") {
-        setAlacakAmount(parseInt(alacakAmount) + parseInt(item.amount));
-      } else if (item.activity_name === "borc")
-        [setBorcAmount(parseInt(borcAmount) + parseInt(item.amount))];
+        setTotalAlacakAmount([]);
+        totalAlacakAmount.push(parseInt(item.amount));
+        let sum = 0;
+        for (let i = 0; i < totalAlacakAmount.length; i++) {
+          sum += totalAlacakAmount[i];
+        }
+        setAlacakAmount(sum);
+      }
+      if (item.activity_name === "borc") {
+        setTotalBorcAmount([]);
+        totalBorcAmount.push(parseInt(item.amount));
+        let borcSum = 0;
+        for (let a = 0; a < totalBorcAmount.length; a++) {
+          borcSum += totalBorcAmount[a];
+        }
+        setBorcAmount(borcSum);
+      }
     });
   }, []);
-
-  console.log(alacakAmount);
 
   const GetData = async () => {
     const colRef = collection(db, "activities");
@@ -62,9 +76,9 @@ export const HomeScreen = ({ navigation }) => {
       amount: amount,
     });
     if (activityName === "alacak") {
-      setAlacakAmount(alacakAmount + amount);
+      setAlacakAmount(parseInt(alacakAmount) + parseInt(amount));
     } else if (activityName === "borc") {
-      setBorcAmount(borcAmount + amount);
+      setBorcAmount(parseInt(borcAmount) + parseInt(amount));
     }
     setActivityName("");
     setAmount(0);
@@ -149,7 +163,12 @@ export const HomeScreen = ({ navigation }) => {
               <Text>₺ {alacakAmount - borcAmount}</Text>
             </View>
           </Card>
-          <Button style={{ marginTop: 20 }} onPress={() => GetData()}>
+          <Button
+            style={{ marginTop: 20 }}
+            onPress={() => {
+              GetData();
+            }}
+          >
             Yenile
           </Button>
         </View>
@@ -225,7 +244,14 @@ export const HomeScreen = ({ navigation }) => {
               value={amount}
               onChangeText={(e) => setAmount(e)}
             />
-            <Button onPress={() => AddData()}>Ekle</Button>
+            <Button
+              onPress={() => {
+                AddData();
+                setAlacakModal(false);
+              }}
+            >
+              Ekle
+            </Button>
           </Card>
         </Modal>
         <Modal
@@ -235,7 +261,7 @@ export const HomeScreen = ({ navigation }) => {
           style={themedStyles.Modal}
         >
           <Card disabled={true}>
-            <Text category="h6">Alacak</Text>
+            <Text category="h6">Borc</Text>
             <Input
               style={themedStyles.Input}
               placeholder="Ad"
@@ -248,7 +274,14 @@ export const HomeScreen = ({ navigation }) => {
               value={amount}
               onChangeText={(e) => setAmount(e)}
             />
-            <Button onPress={() => AddData()}>Ekle</Button>
+            <Button
+              onPress={() => {
+                AddData();
+                setBorcModal(false);
+              }}
+            >
+              Ekle
+            </Button>
           </Card>
         </Modal>
       </Layout>
